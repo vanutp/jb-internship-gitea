@@ -1,7 +1,9 @@
 package dev.vanutp.jb_internship_gitea
 
 import dev.vanutp.jb_internship_gitea.exceptions.AbsolutePathException
+import dev.vanutp.jb_internship_gitea.exceptions.DirectoryExistsException
 import dev.vanutp.jb_internship_gitea.exceptions.EmptyPathException
+import dev.vanutp.jb_internship_gitea.exceptions.FileExistsException
 import java.nio.file.Path
 
 
@@ -17,8 +19,14 @@ class Index {
             throw EmptyPathException()
         }
         if (path.size == 1) {
+            if (subtrees.containsKey(path[0])) {
+                throw DirectoryExistsException()
+            }
             files[path[0]] = contents
         } else {
+            if (files.containsKey(path[0])) {
+                throw FileExistsException()
+            }
             (subtrees[path[0]] ?: let {
                 val index = Index()
                 subtrees[path[0]] = index
