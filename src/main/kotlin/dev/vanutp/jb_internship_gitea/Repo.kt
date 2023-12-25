@@ -10,7 +10,7 @@ class Repo {
     private val commitsRw = mutableMapOf<String, Commit>()
     val commits: Map<String, Commit> = commitsRw
     private val commitsListRw = mutableListOf<String>()
-    val commitsList: List<Commit> get() = commitsListRw.map { commits[it]!! }
+    val commitList: List<Commit> get() = commitsListRw.map { commits[it]!! }
 
     val workingTree = Index()
 
@@ -46,11 +46,11 @@ class Repo {
     }
 
     fun searchCommitsByAuthor(author: String): List<Commit> {
-        return commitsList.filter { it.author == author }
+        return commitList.filter { it.author == author }
     }
 
     fun searchCommitsByMessage(message: String): List<Commit> {
-        return commitsList.filter { it.message.lowercase().contains(message.lowercase()) }
+        return commitList.filter { it.message.lowercase().contains(message.lowercase()) }
     }
 
     private fun getTreeContents(tree: Tree): Index {
