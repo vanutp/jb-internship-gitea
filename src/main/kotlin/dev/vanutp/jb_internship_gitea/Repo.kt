@@ -15,9 +15,13 @@ class Repo {
     val workingTree = Index()
 
     /**
-     * Recursively creates a tree from index and adds it to repository objects
+     * Recursively creates a tree from index and adds it to repository objects.
+     * If passed index is empty, no tree is created and null is returned.
+     * Subtrees are created only if they are non-empty
+     *
+     * @return the created tree or null if the passed index was empty
      */
-    private fun createTree(index: Index): Tree {
+    private fun createTree(index: Index): Tree? {
         val treeObjects = mutableMapOf<String, String>()
         for (file in index.files) {
             val obj = Blob(file.value)
@@ -26,7 +30,12 @@ class Repo {
         }
         for (subtree in index.subtrees) {
             val obj = createTree(subtree.value)
-            treeObjects[subtree.key] = obj.sha1
+            if (obj != null) {
+                treeObjects[subtree.key] = obj.sha1
+            }
+        }
+        if (treeObjects.isEmpty()) {
+            return null
         }
         val tree = Tree(treeObjects)
         objectsRw[tree.sha1] = tree
@@ -34,11 +43,24 @@ class Repo {
     }
 
     /**
+     * Same as createTree, but returns empty tree if the passed root index is empty
+     *
+     * @return the created tree
+     */
+    private fun createNonNullTree(index: Index): Tree {
+        return createTree(index) ?: let {
+            val tree = Tree(mapOf())
+            objectsRw[tree.sha1] = tree
+            tree
+        }
+    }
+
+    /**
      * Creates a commit from repository working tree and adds it to repository commits
      */
     fun commit(author: String, message: String): Commit {
         val time = Clock.System.now()
-        val tree = createTree(workingTree)
+        val tree = createNonNullTree(workingTree)
         val commit = Commit(tree.sha1, author, message, time)
         commitsRw[commit.sha1] = commit
         commitsListRw.add(commit.sha1)
