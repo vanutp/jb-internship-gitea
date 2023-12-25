@@ -5,6 +5,7 @@ import dev.vanutp.jb_internship_gitea.exceptions.DirectoryExistsException
 import dev.vanutp.jb_internship_gitea.exceptions.EmptyPathException
 import dev.vanutp.jb_internship_gitea.exceptions.FileExistsException
 import java.nio.file.Path
+import kotlin.io.path.Path
 
 
 /**
@@ -43,6 +44,10 @@ class Index {
         return addFile(path.map { it.toString() }, contents)
     }
 
+    fun addFile(path: String, contents: String) {
+        return addFile(Path(path), contents)
+    }
+
     fun removeFile(path: List<String>) {
         if (path.isEmpty()) {
             throw EmptyPathException()
@@ -59,6 +64,10 @@ class Index {
             throw AbsolutePathException()
         }
         return removeFile(path.map { it.toString() })
+    }
+
+    fun removeFile(path: String) {
+        return removeFile(Path(path))
     }
 
     fun clear() {
