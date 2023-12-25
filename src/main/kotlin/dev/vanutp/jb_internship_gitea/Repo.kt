@@ -67,10 +67,18 @@ class Repo {
         return commit
     }
 
+    /**
+     * Returns commits with the author equal to the passed argument.
+     * Case-sensitive
+     */
     fun searchCommitsByAuthor(author: String): List<Commit> {
         return commitList.filter { it.author == author }
     }
 
+    /**
+     * Returns commits commit messages of which contain the given text.
+     * Case-insensitive
+     */
     fun searchCommitsByMessage(message: String): List<Commit> {
         return commitList.filter { it.message.lowercase().contains(message.lowercase()) }
     }
@@ -82,9 +90,11 @@ class Repo {
                 is Tree -> {
                     res.subtrees[item.key] = getTreeContents(obj)
                 }
+
                 is Blob -> {
                     res.files[item.key] = obj.data
                 }
+
                 else -> {
                     throw Exception("Unknown object type")
                 }
